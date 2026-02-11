@@ -45,11 +45,36 @@ char *mnemonics[] = {
 	"HLT",
 };
 
-Instruction read_program() {
-	
+Instruction read_Instruction() {
+	Instruction a;
+	a.type = IT_NOP;
+	a.arg = 1;
+	return a;
 }
 
-int main() {
+Instruction read_Program() {
+	Instruction a;
+	a.type = IT_NOP;
+	a.arg = 1;
+	return a;
+}
+
+int main(int argc, char** argv) {
+	for (int i = 0; i < argc; i++) {
+		printf("argv[%d]: %s\n", i, argv[i]);
+	}
+	 FILE *fptr;
+
+	fptr = fopen(argv[1], "r");
+
+	char myString[100];
+
+	fgets(myString, 100, fptr);
+
+	printf("%s", myString);
+
+	fclose(fptr);
+	return 1;
 
 };
 
