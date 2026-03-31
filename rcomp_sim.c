@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
 
 typedef enum InstructionType {
 	IT_NOP,
@@ -26,7 +26,7 @@ typedef struct Instruction {
 	int arg;
 } Instruction;
 
-char *mnemonics[] = {
+char* mnemonics[] = {
 	"NOP",
 	"LDI",
 	"LDA",
@@ -45,36 +45,74 @@ char *mnemonics[] = {
 	"HLT",
 };
 
+Instruction* program;
+int* regs;
+
 Instruction read_Instruction() {
 	Instruction a;
 	a.type = IT_NOP;
-	a.arg = 1;
+	a.arg = 0;
 	return a;
 }
 
-Instruction read_Program() {
-	Instruction a;
-	a.type = IT_NOP;
-	a.arg = 1;
-	return a;
+int getAndCompDigits(int numA, int numB) {
+	if (numA == 0 && numB == 0) { 
+		return 1;
+	}
+	int countA = 0;
+	int countB = 0;
+	while (numA != 0 || numB != 0) {
+		if (numA != 0) countA++;
+		if (numB != 0) countB++;
+		numA /= 10;
+		numB /= 10;
+	}
+	return (countA > countB) ? countA : countB;
 }
+
+void read_Program(char* file, Instruction* program) {
+	
+	int progLen;
+	int regCount;
+	int valLen;
+	int progCount = 0;
+	int lineLen;
+	
+	printf("Enter maximum programm length: ");
+	scanf("%d", &progLen);
+	printf("Enter Register Count: ");
+	scanf("%d", &regCount);
+	printf("Enter maximum Value: ");
+	scanf("%d", &valLen);
+	
+	lineLen = getAndCompDigits(regCount, valLen);
+	printf("%d\n", lineLen);
+
+	program = (Instruction*) malloc(progLen * sizeof(Instruction));
+
+	FILE* fptr;
+	fptr = fopen(file, "r");
+	if (fptr == NULL) {
+		perror("fopen");
+		exit(2);
+		return;
+	} else {
+		
+	}
+	fclose(fptr);
+}
+
+void simProgram(Instruction* program){
+	for (int i = 0; i < program.length(); i++) {
+		
+	}
+}
+
 
 int main(int argc, char** argv) {
-	for (int i = 0; i < argc; i++) {
-		printf("argv[%d]: %s\n", i, argv[i]);
-	}
-	 FILE *fptr;
-
-	fptr = fopen(argv[1], "r");
-
-	char myString[100];
-
-	fgets(myString, 100, fptr);
-
-	printf("%s", myString);
-
-	fclose(fptr);
-	return 1;
-
+	Instruction* program;
+	read_Program(argv[1], program);
+		
+	return 0;
 };
 
