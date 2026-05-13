@@ -70,6 +70,8 @@ int getAndCompDigits(int numA, int numB) {
 	return (countA > countB) ? countA : countB;
 }
 
+
+
 void read_Program(char* file, Instruction* program) {
 	
 	int progLen;
@@ -103,8 +105,52 @@ void read_Program(char* file, Instruction* program) {
 }
 
 void simProgram(Instruction* program){
-	for (int i = 0; i < program.length(); i++) {
-		
+  int akku = 0;
+  regs = (int*) malloc(16 * sizeof(int));
+	for (int i = 0; i < (sizeof(program)/sizeof(Instruction)); i++) {
+    Instruction cmd = program[i];
+    if (cmd.type == IT_NOP || cmd.type == IT_PAU) {
+      continue;
+    } else if (cmd.type == IT_HLT) {
+      printf("%d", akku);
+      return;
+    } else if (cmd.type == IT_LDI) {
+      akku = cmd.arg;
+      continue;
+    } else if (cmd.type == IT_LDA && cmd.arg < 16) {
+      akku = regs[cmd.arg];
+      continue;
+    } else if (cmd.type == IT_STA) {
+      regs[cmd.arg] = akku;
+      continue;
+    } else if (cmd.type == IT_ADI) {
+      akku += cmd.arg;
+      continue;
+    } else if (cmd.type == IT_ADA) {
+      akku += regs[cmd.arg];
+    } else if (cmd.type == IT_SBA) {
+      akku -= regs[cmd.arg];
+      continue;
+    } else if (cmd.type == IT_INC) {
+      akku++;
+      continue;
+    } else if (cmd.type == IT_DEC) {
+      akku--;
+      continue;
+    } else if (cmd.type == IT_JMP) {
+      i = cmd.arg - 1;
+      continue;
+    } else if (cmd.type == IT_JPZ && akku == 0) {
+      i = cmd.arg - 1;
+      continue;
+    } else if (cmd.type == IT_JPC && akku >= 16) {
+      i = cmd.arg -1;
+      continue;
+    } else if (cmd.type == IT_E1) {     // freier Befehl, kann später implementiert werden
+      continue;
+    } else if (cmd.type == IT_E2) {     // freier Befehl, kann später implementiert werden
+      continue;
+    }
 	}
 }
 
