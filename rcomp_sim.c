@@ -39,8 +39,8 @@ char* mnemonics[] = {
 	"JMP",
 	"JPZ",
 	"JPC",
-	"E1",
-	"E2",
+	"EM1",
+	"EM2",
 	"PAU",
 	"HLT",
 };
@@ -48,49 +48,20 @@ char* mnemonics[] = {
 Instruction* program;
 int* regs;
 
-Instruction read_Instruction() {
+Instruction read_instruction() {
 	Instruction a;
 	a.type = IT_NOP;
 	a.arg = 0;
 	return a;
 }
 
-int getAndCompDigits(int numA, int numB) {
-	if (numA == 0 && numB == 0) { 
-		return 1;
-	}
-	int countA = 0;
-	int countB = 0;
-	while (numA != 0 || numB != 0) {
-		if (numA != 0) countA++;
-		if (numB != 0) countB++;
-		numA /= 10;
-		numB /= 10;
-	}
-	return (countA > countB) ? countA : countB;
-}
-
-
-
-void read_Program(char* file, Instruction* program) {
+void read_program(char* file, Instruction* program) {
 	
-	int progLen;
-	int regCount;
-	int valLen;
-	int progCount = 0;
-	int lineLen;
+	int prog_len = 16;
 	
-	printf("Enter maximum programm length: ");
-	scanf("%d", &progLen);
-	printf("Enter Register Count: ");
-	scanf("%d", &regCount);
-	printf("Enter maximum Value: ");
-	scanf("%d", &valLen);
-	
-	lineLen = getAndCompDigits(regCount, valLen);
 	printf("%d\n", lineLen);
 
-	program = (Instruction*) malloc(progLen * sizeof(Instruction));
+	program = (Instruction*) malloc(prog_len * sizeof(Instruction));
 
 	FILE* fptr;
 	fptr = fopen(file, "r");
@@ -102,62 +73,56 @@ void read_Program(char* file, Instruction* program) {
 		
 	}
 	fclose(fptr);
+	sim_program(program);
 }
 
-void simProgram(Instruction* program){
-  int akku = 0;
-  regs = (int*) malloc(16 * sizeof(int));
+void sim_program(Instruction* program){
+  int accu = 0;
+  int[16] regs;
 	for (int i = 0; i < (sizeof(program)/sizeof(Instruction)); i++) {
     Instruction cmd = program[i];
     if (cmd.type == IT_NOP || cmd.type == IT_PAU) {
       continue;
     } else if (cmd.type == IT_HLT) {
       printf("%d", akku);
+      free(regs);
       return;
     } else if (cmd.type == IT_LDI) {
       akku = cmd.arg;
-      continue;
     } else if (cmd.type == IT_LDA && cmd.arg < 16) {
       akku = regs[cmd.arg];
-      continue;
     } else if (cmd.type == IT_STA) {
       regs[cmd.arg] = akku;
-      continue;
     } else if (cmd.type == IT_ADI) {
-      akku += cmd.arg;
-      continue;
+      accu += cmd.arg;
     } else if (cmd.type == IT_ADA) {
-      akku += regs[cmd.arg];
+      accu += regs[cmd.arg];
     } else if (cmd.type == IT_SBA) {
-      akku -= regs[cmd.arg];
-      continue;
+      accu -= regs[cmd.arg];
     } else if (cmd.type == IT_INC) {
-      akku++;
-      continue;
+      accu++;
     } else if (cmd.type == IT_DEC) {
-      akku--;
-      continue;
+      accu--;
     } else if (cmd.type == IT_JMP) {
       i = cmd.arg - 1;
-      continue;
     } else if (cmd.type == IT_JPZ && akku == 0) {
       i = cmd.arg - 1;
-      continue;
     } else if (cmd.type == IT_JPC && akku >= 16) {
       i = cmd.arg -1;
-      continue;
     } else if (cmd.type == IT_E1) {     // freier Befehl, kann später implementiert werden
-      continue;
+
     } else if (cmd.type == IT_E2) {     // freier Befehl, kann später implementiert werden
-      continue;
+
     }
 	}
+	printf("%d", accu);
+	free(regs);
 }
 
 
 int main(int argc, char** argv) {
 	Instruction* program;
-	read_Program(argv[1], program);
+	read_program(argv[1], program);
 		
 	return 0;
 };
